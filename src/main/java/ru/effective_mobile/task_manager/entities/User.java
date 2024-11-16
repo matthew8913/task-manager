@@ -27,4 +27,14 @@ public class User {
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Comment> comments;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
+    @Column(name = "refresh_token")
+    private String refreshToken;
+    public enum Role {
+        ADMIN, USER
+    }
 }

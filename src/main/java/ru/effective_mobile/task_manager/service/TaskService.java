@@ -197,4 +197,8 @@ public class TaskService {
         response.setUpdatedAt(task.getUpdatedAt());
         return response;
     }
+
+    public boolean isAssignee(String username, Long taskId) {
+         Task task = taskRepository.findById(taskId).orElseThrow(() -> new IllegalArgumentException("Task not found"));
+         return task.getAssignee().getEmail().equals(username);}
 }
