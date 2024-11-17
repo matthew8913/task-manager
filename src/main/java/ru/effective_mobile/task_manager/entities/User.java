@@ -9,32 +9,34 @@ import java.util.List;
 @Table(name = "users")
 @Data
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String email;
+  @Column(unique = true, nullable = false)
+  private String email;
 
-    @Column(nullable = false)
-    private String password;
+  @Column(nullable = false)
+  private String password;
 
-    @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Task> authoredTasks;
+  @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE, orphanRemoval = true)
+  private List<Task> authoredTasks;
 
-    @OneToMany(mappedBy = "assignee", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Task> assignedTasks;
+  @OneToMany(mappedBy = "assignee", cascade = CascadeType.REMOVE, orphanRemoval = true)
+  private List<Task> assignedTasks;
 
-    @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Comment> comments;
+  @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE, orphanRemoval = true)
+  private List<Comment> comments;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Role role;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private Role role;
 
-    @Column(name = "refresh_token")
-    private String refreshToken;
-    public enum Role {
-        ADMIN, USER
-    }
+  @Column(name = "refresh_token")
+  private String refreshToken;
+
+  public enum Role {
+    ADMIN,
+    USER
+  }
 }

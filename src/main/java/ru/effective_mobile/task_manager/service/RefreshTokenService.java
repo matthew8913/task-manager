@@ -16,35 +16,44 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class RefreshTokenService {
 
-    private final UserRepository userRepository;
-    private final JwtRequestFilter jwtRequestFilter;
-    private final UserDetailsService userDetailsService;
+  private final UserRepository userRepository;
+  private final JwtRequestFilter jwtRequestFilter;
+  private final UserDetailsService userDetailsService;
 
-    public String createRefreshToken(String email) {
-        String refreshToken = UUID.randomUUID().toString();
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
-        user.setRefreshToken(refreshToken);
-        userRepository.save(user);
-        return refreshToken;
+  public String createRefreshToken(String email) {
+    String refreshToken = UUID.randomUUID().toString();
+    User user =
+        userRepository
+            .findByEmail(email)
+            .orElseThrow(
+                () -> new UsernameNotFoundException("User not found with email: " + email));
+    user.setRefreshToken(refreshToken);
+    userRepository.save(user);
+    return refreshToken;
+  }
+
+  public String refreshAccessToken(String refreshToken) {
+    User user =
+        userRepository
+            .findByRefreshToken(refreshToken)
+            .orElseThrow(
+                () -> new TokenRefreshException(refreshToken, "Refresh token is not in database!"));
+
+    if (user.getRefreshToken().equals(refreshToken)) {
+      UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+      return jwtRequestFilter.generateToken(userDetails);
+    } else {
+      throw new TokenRefreshException(refreshToken, "Refresh token is not valid!");
     }
+  }
 
-    public String refreshAccessToken(String refreshToken) {
-        User user = userRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new TokenRefreshException(refreshToken, "Refresh token is not in database!"));
-
-        if (user.getRefreshToken().equals(refreshToken)) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
-            return jwtRequestFilter.generateToken(userDetails);
-        } else {
-            throw new TokenRefreshException(refreshToken, "Refresh token is not valid!");
-        }
-    }
-
-    public void deleteRefreshToken(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
-        user.setRefreshToken(null);
-        userRepository.save(user);
-    }
+  public void deleteRefreshToken(String email) {
+    User user =
+        userRepository
+            .findByEmail(email)
+            .orElseThrow(
+                () -> new UsernameNotFoundException("User not found with email: " + email));
+    user.setRefreshToken(null);
+    userRepository.save(user);
+  }
 }

@@ -9,21 +9,21 @@ import java.time.LocalDateTime;
 @Table(name = "comments")
 @Data
 public class Comment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(nullable = false)
-    private String content;
+  @Column(nullable = false)
+  private String content;
 
-    @ManyToOne
-    @JoinColumn(name = "task_id", nullable = false)
-    private Task task;
+  @ManyToOne
+  @JoinColumn(name = "task_id", nullable = false)
+  private Task task;
 
-    @ManyToOne
-    @JoinColumn(name = "author_id", nullable = false)
-    private User author;
+  @ManyToOne
+  @JoinColumn(name = "author_id", nullable = false)
+  private User author;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
+  @Column(nullable = false)
+  private LocalDateTime createdAt;
 }

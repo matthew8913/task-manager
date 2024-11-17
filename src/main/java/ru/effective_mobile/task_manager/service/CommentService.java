@@ -1,5 +1,6 @@
 package ru.effective_mobile.task_manager.service;
 
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,8 +13,6 @@ import ru.effective_mobile.task_manager.entities.User;
 import ru.effective_mobile.task_manager.repository.CommentRepository;
 import ru.effective_mobile.task_manager.repository.TaskRepository;
 import ru.effective_mobile.task_manager.repository.UserRepository;
-
-import java.time.LocalDateTime;
 
 /**
  * Сервис для работы с комментариями.

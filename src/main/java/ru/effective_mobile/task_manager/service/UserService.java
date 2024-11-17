@@ -12,44 +12,49 @@ import ru.effective_mobile.task_manager.repository.UserRepository;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+  private final UserRepository userRepository;
+  private final PasswordEncoder passwordEncoder;
 
-    public User registerUser(RegisterRequest registrationRequest) {
-        if (userRepository.findByEmail(registrationRequest.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email already exists");
-        }
-
-        User user = new User();
-        user.setEmail(registrationRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
-        user.setRole(User.Role.USER);
-
-        return userRepository.save(user);
+  public void registerUser(RegisterRequest registrationRequest) {
+    if (userRepository.findByEmail(registrationRequest.getEmail()).isPresent()) {
+      throw new IllegalArgumentException("Email already exists");
     }
 
-    @PostConstruct
-    public void init() {
-        if (userRepository.findByEmail("admin@example.com").isEmpty()) {
-            User admin = new User();
-            admin.setEmail("admin@example.com");
-            admin.setPassword(passwordEncoder.encode("adminPassword"));
-            admin.setRole(User.Role.ADMIN);
-            userRepository.save(admin);
-        }
-    }
+    User user = new User();
+    user.setEmail(registrationRequest.getEmail());
+    user.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
+    user.setRole(User.Role.USER);
 
-    public void saveRefreshToken(String email, String refreshToken) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
-        user.setRefreshToken(refreshToken);
-        userRepository.save(user);
-    }
+    userRepository.save(user);
+  }
 
-    public boolean validateRefreshToken(String email, String refreshToken) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
-        return user.getRefreshToken() != null && user.getRefreshToken().equals(refreshToken);
+  @PostConstruct
+  public void init() {
+    if (userRepository.findByEmail("admin@example.com").isEmpty()) {
+      User admin = new User();
+      admin.setEmail("admin@example.com");
+      admin.setPassword(passwordEncoder.encode("adminPassword"));
+      admin.setRole(User.Role.ADMIN);
+      userRepository.save(admin);
     }
+  }
 
+  public void saveRefreshToken(String email, String refreshToken) {
+    User user =
+        userRepository
+            .findByEmail(email)
+            .orElseThrow(
+                () -> new UsernameNotFoundException("User not found with email: " + email));
+    user.setRefreshToken(refreshToken);
+    userRepository.save(user);
+  }
+
+  public boolean validateRefreshToken(String email, String refreshToken) {
+    User user =
+        userRepository
+            .findByEmail(email)
+            .orElseThrow(
+                () -> new UsernameNotFoundException("User not found with email: " + email));
+    return user.getRefreshToken() != null && user.getRefreshToken().equals(refreshToken);
+  }
 }

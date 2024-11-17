@@ -1,17 +1,18 @@
 package ru.effective_mobile.task_manager.service;
 
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.effective_mobile.task_manager.dto.PartialUpdateTaskRequest;
 import ru.effective_mobile.task_manager.dto.TaskRequest;
 import ru.effective_mobile.task_manager.dto.TaskResponse;
+import ru.effective_mobile.task_manager.dto.UpdateTaskStatusRequest;
 import ru.effective_mobile.task_manager.entities.Task;
 import ru.effective_mobile.task_manager.entities.User;
 import ru.effective_mobile.task_manager.repository.TaskRepository;
 import ru.effective_mobile.task_manager.repository.UserRepository;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -54,7 +55,7 @@ public class TaskService {
      * @param taskRequest Запрос на обновление задачи.
      * @return Ответ с обновленной задачей.
      */
-    public TaskResponse partialUpdateTask(Long id, TaskRequest taskRequest) {
+    public TaskResponse partialUpdateTask(Long id, PartialUpdateTaskRequest taskRequest) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Task not found"));
 
@@ -201,4 +202,12 @@ public class TaskService {
     public boolean isAssignee(String username, Long taskId) {
          Task task = taskRepository.findById(taskId).orElseThrow(() -> new IllegalArgumentException("Task not found"));
          return task.getAssignee().getEmail().equals(username);}
+
+    public TaskResponse updateTaskStatus(Long id, UpdateTaskStatusRequest updateTaskStatusRequest) {
+        Task task = taskRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Task not found"));
+        task.setStatus(updateTaskStatusRequest.getStatus());
+        task.setUpdatedAt(LocalDateTime.now());
+        Task updatedTask = taskRepository.save(task);
+        return mapToTaskResponse(updatedTask);
+    }
 }
