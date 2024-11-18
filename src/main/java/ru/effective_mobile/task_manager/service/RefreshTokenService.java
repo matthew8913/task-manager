@@ -1,5 +1,6 @@
 package ru.effective_mobile.task_manager.service;
 
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -9,8 +10,6 @@ import ru.effective_mobile.task_manager.entities.User;
 import ru.effective_mobile.task_manager.exception.TokenRefreshException;
 import ru.effective_mobile.task_manager.repository.UserRepository;
 import ru.effective_mobile.task_manager.security.JwtRequestFilter;
-
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

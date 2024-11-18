@@ -1,10 +1,12 @@
 package ru.effective_mobile.task_manager.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Schema(description = "Запрос на аутентификацию")
+@Builder
 public class AuthRequest {
   @Schema(
       description = "Уникальный email пользователя",

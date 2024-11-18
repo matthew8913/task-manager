@@ -1,11 +1,13 @@
 package ru.effective_mobile.task_manager.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Data;
 import ru.effective_mobile.task_manager.entities.Task;
 
 @Data
 @Schema(description = "Запрос на частичное обновление задачи")
+@Builder
 public class PartialUpdateTaskRequest {
   @Schema(description = "Заголовок задачи", example = "Задача 1")
   private String title;

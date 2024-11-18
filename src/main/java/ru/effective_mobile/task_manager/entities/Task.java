@@ -1,14 +1,19 @@
 package ru.effective_mobile.task_manager.entities;
 
 import jakarta.persistence.*;
-import lombok.Data;
-
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "tasks")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Task {
 
   @Id

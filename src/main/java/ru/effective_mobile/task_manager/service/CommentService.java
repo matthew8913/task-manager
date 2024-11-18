@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import ru.effective_mobile.task_manager.dto.CommentRequest;
 import ru.effective_mobile.task_manager.dto.CommentResponse;
@@ -14,65 +16,71 @@ import ru.effective_mobile.task_manager.repository.CommentRepository;
 import ru.effective_mobile.task_manager.repository.TaskRepository;
 import ru.effective_mobile.task_manager.repository.UserRepository;
 
-/**
- * Сервис для работы с комментариями.
- */
+/** Сервис для работы с комментариями. */
 @Service
 @RequiredArgsConstructor
 public class CommentService {
 
-    private final CommentRepository commentRepository;
-    private final TaskRepository taskRepository;
-    private final UserRepository userRepository;
+  private final CommentRepository commentRepository;
+  private final TaskRepository taskRepository;
+  private final UserRepository userRepository;
 
-    /**
-     * Создает новый комментарий.
-     *
-     * @param commentRequest Запрос на создание комментария.
-     * @return Ответ с созданным комментарием.
-     */
-    public CommentResponse createComment(CommentRequest commentRequest) {
-        Comment newComment = new Comment();
-        newComment.setContent(commentRequest.getContent());
-        newComment.setCreatedAt(LocalDateTime.now());
+  /**
+   * Создает новый комментарий.
+   *
+   * @param commentRequest Запрос на создание комментария.
+   * @return Ответ с созданным комментарием.
+   */
+  public CommentResponse createComment(CommentRequest commentRequest) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String email = authentication.getName();
 
-        Task task = taskRepository.findById(commentRequest.getTaskId())
-                .orElseThrow(() -> new IllegalArgumentException("Task not found"));
-        newComment.setTask(task);
 
-        User author = userRepository.findById(commentRequest.getAuthorId())
-                .orElseThrow(() -> new IllegalArgumentException("Author not found"));
-        newComment.setAuthor(author);
+    User author =
+        userRepository
+            .findByEmail(email)
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        Comment savedComment = commentRepository.save(newComment);
-        return mapToCommentResponse(savedComment);
-    }
+    Comment newComment = new Comment();
+    newComment.setAuthor(author);
+    newComment.setContent(commentRequest.getContent());
+    newComment.setCreatedAt(LocalDateTime.now());
 
-    /**
-     * Получает список комментариев по идентификатору задачи с пагинацией.
-     *
-     * @param taskId   Идентификатор задачи.
-     * @param pageable Объект пагинации.
-     * @return Страница с комментариями.
-     */
-    public Page<CommentResponse> getCommentsByTask(Long taskId, Pageable pageable) {
-        Page<Comment> comments = commentRepository.findByTaskId(taskId, pageable);
-        return comments.map(this::mapToCommentResponse);
-    }
+    Task task =
+        taskRepository
+            .findById(commentRequest.getTaskId())
+            .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+    newComment.setTask(task);
 
-    /**
-     * Преобразует сущность Comment в DTO CommentResponse.
-     *
-     * @param comment Сущность Comment.
-     * @return DTO CommentResponse.
-     */
-    private CommentResponse mapToCommentResponse(Comment comment) {
-        CommentResponse response = new CommentResponse();
-        response.setId(comment.getId());
-        response.setContent(comment.getContent());
-        response.setTaskId(comment.getTask().getId());
-        response.setAuthorId(comment.getAuthor().getId());
-        response.setCreatedAt(comment.getCreatedAt());
-        return response;
-    }
+    Comment savedComment = commentRepository.save(newComment);
+    return mapToCommentResponse(savedComment);
+  }
+
+  /**
+   * Получает список комментариев по идентификатору задачи с пагинацией.
+   *
+   * @param taskId Идентификатор задачи.
+   * @param pageable Объект пагинации.
+   * @return Страница с комментариями.
+   */
+  public Page<CommentResponse> getCommentsByTask(Long taskId, Pageable pageable) {
+    Page<Comment> comments = commentRepository.findByTaskId(taskId, pageable);
+    return comments.map(this::mapToCommentResponse);
+  }
+
+  /**
+   * Преобразует сущность Comment в DTO CommentResponse.
+   *
+   * @param comment Сущность Comment.
+   * @return DTO CommentResponse.
+   */
+  private CommentResponse mapToCommentResponse(Comment comment) {
+    CommentResponse response = new CommentResponse();
+    response.setId(comment.getId());
+    response.setContent(comment.getContent());
+    response.setTaskId(comment.getTask().getId());
+    response.setAuthorId(comment.getAuthor().getId());
+    response.setCreatedAt(comment.getCreatedAt());
+    return response;
+  }
 }

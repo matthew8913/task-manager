@@ -48,13 +48,4 @@ public class UserService {
     user.setRefreshToken(refreshToken);
     userRepository.save(user);
   }
-
-  public boolean validateRefreshToken(String email, String refreshToken) {
-    User user =
-        userRepository
-            .findByEmail(email)
-            .orElseThrow(
-                () -> new UsernameNotFoundException("User not found with email: " + email));
-    return user.getRefreshToken() != null && user.getRefreshToken().equals(refreshToken);
-  }
 }

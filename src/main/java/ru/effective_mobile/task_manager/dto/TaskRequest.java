@@ -3,11 +3,13 @@ package ru.effective_mobile.task_manager.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Data;
 import ru.effective_mobile.task_manager.entities.Task;
 
 @Data
 @Schema(description = "Запрос на создание или обновление задачи")
+@Builder
 public class TaskRequest {
   @NotBlank(message = "Title is mandatory")
   @Schema(description = "Заголовок задачи", example = "Задача 1")

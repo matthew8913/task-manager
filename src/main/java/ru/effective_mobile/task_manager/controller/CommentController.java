@@ -6,8 +6,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import ru.effective_mobile.task_manager.dto.CommentResponse;
 import ru.effective_mobile.task_manager.service.CommentService;
 
 /** Контроллер для работы с комментариями. */
+@Slf4j
 @Tag(name = "Комментарии", description = "Эндпоинты для работы с комментариями")
 @RestController
 @RequestMapping("/api/comments")
@@ -34,7 +37,8 @@ public class CommentController {
    */
   @Operation(
       summary = "Создание комментария",
-      description = "Необходимо являться исполнителем, либо администратором!")
+      description = "Необходимо являться исполнителем, либо администратором!",
+      security = @SecurityRequirement(name = "Bearer Authentication"))
   @ApiResponses(
       value = {
         @ApiResponse(
@@ -64,8 +68,10 @@ public class CommentController {
       CommentResponse commentResponse = commentService.createComment(commentRequest);
       return ResponseEntity.ok(commentResponse);
     } catch (IllegalArgumentException e) {
+
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     } catch (Exception e) {
+      log.error(e.getMessage());
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Произошла ошибка");
     }
   }
@@ -79,7 +85,8 @@ public class CommentController {
    */
   @Operation(
       summary = "Получение комментариев по Id задачи",
-      description = "Необходимо являться исполнителем, либо администратором!")
+      description = "Необходимо являться исполнителем, либо администратором!",
+      security = @SecurityRequirement(name = "Bearer Authentication"))
   @ApiResponses(
       value = {
         @ApiResponse(

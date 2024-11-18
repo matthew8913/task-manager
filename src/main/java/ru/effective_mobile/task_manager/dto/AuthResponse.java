@@ -9,7 +9,7 @@ import lombok.Data;
 @Schema(description = "Ответ на аутентификацию")
 public class AuthResponse {
   @Schema(description = "JWT токен", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9")
-  private String token;
+  private String accessToken;
 
   @Schema(description = "Refresh токен", example = "refresh_token_example")
   private String refreshToken;
